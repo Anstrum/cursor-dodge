@@ -1,0 +1,8 @@
+*.love
+*.dll
+*.exe
+*.txt
+*.zip
+
+build/
+
