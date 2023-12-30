@@ -17,7 +17,7 @@ function game.init()
     game.settings = require("misc/settings")
     game.player = require("game/player/player")
     game.shoots = require("game/shoots/shoots")
-    game.hud = require("game/hud")
+    game.hud = require("game//hud/hud")
 
 
     game.player.init(game.settings.hp, game.settings.cursor)
