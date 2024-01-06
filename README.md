@@ -62,7 +62,6 @@
 - timer
 
 ## Backlog
-- Adding good spawn projectile (using angles and cos / sin / tan)
 - Adding good sprites and animations
 - Adding Debug mode (f8)
 - Adding Auto export (build and create zip to export with batch files) CICD
