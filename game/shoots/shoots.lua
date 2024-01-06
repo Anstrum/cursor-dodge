@@ -8,6 +8,7 @@ local shoots = {}
     }
 
     shoots.settings = {
+        minSpeed = nil,
         maxSpeed = nil,
         minSize = nil,
         maxSize = nil,
@@ -22,87 +23,94 @@ function shoots.init(settings)
 
     shoots.stats.tick = 0
     shoots.stats.delay = math.random(shoots.settings.minShootDelay, shoots.settings.maxShootDelay)
+
+    shoots.generateShot()
 end
 
 function  shoots.generateShot()
-    local myShoot = {}
+    local myShot = {}
 
-    myShoot.ratio = math.random()
+    myShot.angle = math.random() * math.pi * 2 -- this will be the angle of the shot
+    myShot.radius = math.random(shoots.settings.minSize, shoots.settings.maxSize)
+    myShot.speed = math.random(shoots.settings.minSpeed, shoots.settings.maxSpeed)
 
-    myShoot.speedX = shoots.settings.maxSpeed * myShoot.ratio
-    if math.random(0, 1) > 0 then
-        myShoot.speedX = myShoot.speedX * - 1
-    end
-    myShoot.speedY = shoots.settings.maxSpeed * (1 - myShoot.ratio)
-    if math.random(0, 1) > 0 then
-        myShoot.speedY = myShoot.speedY * - 1
-    end
+    -- random pos is to make sure the shoots won't all go on the center of the screen
+    myShot.x = math.random(screen.width * 0.1, screen.width)
+    myShot.y = math.random(screen.height * 0.1, screen.height)
 
-    myShoot.shape = "circle"
-    
-    myShoot.radius = math.random(shoots.settings.minSize, shoots.settings.maxSize)
+    local speedX = 0 - (math.cos(myShot.angle) * myShot.speed)
+    local speedY = 0 - (math.sin(myShot.angle) * myShot.speed)
 
-    if myShoot.speedX > 0 then
-        myShoot.x = - myShoot.radius
-    else
-        myShoot.x = screen.width + myShoot.radius
-    end
+    local outTheScreen = false
+    while not outTheScreen do
+        myShot.x = myShot.x + speedX 
+        myShot.y = myShot.y + speedY
 
-    if myShoot.speedY > 0 then
-        myShoot.y = - myShoot.radius
-    else
-        myShoot.y = screen.height + myShoot.radius
+        if math.abs(myShot.x) > screen.width * 1.2 and math.abs(myShot.y) > screen.height * 1.2 then
+            outTheScreen = true
+        end
     end
 
-    table.insert(shoots.stats.list, myShoot)
+    table.insert(shoots.stats.list, myShot)
 end
 
 function shoots.update(dt)
 
-    -- ADD new shoot on tick
+    if #shoots.stats.list < 1 then
+        return
+    end
+
     shoots.stats.tick = shoots.stats.tick + 1 * dt * game.globalStats.gameSpeed
+
+    -- generating new shoot if the delay is over
     if shoots.stats.tick > shoots.stats.delay then
         shoots.stats.tick = 0
         shoots.stats.delay = math.random(shoots.settings.minShootDelay, shoots.settings.maxShootDelay)
         shoots.generateShot()
     end
-    
-    -- FOR existing shoots, we calculate collision
+
+    -- calculating shoot collision
     for i = #shoots.stats.list, 1, -1 do
         local myShot = shoots.stats.list[i]
-        if myShot.shape == "circle" then
-            local distX = math.abs(myShot.x - mouse.x)
-            local distY = math.abs(myShot.y - mouse.y)
-            if distX + distY < myShot.radius + game.getCursorSize() then
-                if game.getInvincibleTime() > 0 then
-                    goto continue
-                end
-                table.remove(shoots.stats.list, i)
-                game.takeDamage()
-                game.addPlayerInvincibility()
-                game.player.cursor.addInvincibility(1)
-                goto continue
+        local distX = math.abs(myShot.x - mouse.x)
+        local distY = math.abs(myShot.y - mouse.y)
+
+        if distX + distY < myShot.radius + game.getCursorSize() then
+
+            if game.getInvincibleTime() > 0 then
+                break
             end
+
+            table.remove(shoots.stats.list, i)
+
+            game.takeDamage()
+            game.addPlayerInvincibility()
+            game.player.cursor.addInvincibility(1)
         end
-        ::continue::
-        -- NOW we make them move
-        if #shoots.stats.list > 0 and i <= #shoots.stats.list then
-            shoots.stats.list[i].x = shoots.stats.list[i].x + shoots.stats.list[i].speedX * dt * game.globalStats.gameSpeed / 3
-            shoots.stats.list[i].y = shoots.stats.list[i].y + shoots.stats.list[i].speedY * dt * game.globalStats.gameSpeed / 3
-            if math.abs(shoots.stats.list[i].x) > screen.width * 2 or math.abs(shoots.stats.list[i].y) > screen.height * 2 then
-                table.remove(shoots.stats.list, i)
-            end
+    end
+
+    -- updating shoot position
+    for i = #shoots.stats.list, 1, -1 do
+        local myShot = shoots.stats.list[i]
+
+        local speedX = (math.cos(myShot.angle) * myShot.speed * dt * game.globalStats.gameSpeed)
+        local speedY = (math.sin(myShot.angle) * myShot.speed * dt * game.globalStats.gameSpeed)
+
+        myShot.x = myShot.x + speedX
+        myShot.y = myShot.y + speedY
+
+        if math.abs(myShot.x) > screen.width * 2 and math.abs(myShot.y) > screen.height * 2 then
+            table.remove(shoots.stats.list, i)
         end
     end
 end
 
 function shoots.draw()
     love.graphics.setColor(1, 0, 0, 1)
+    print("test")
     for i = 1, #shoots.stats.list do
         local myShot = shoots.stats.list[i]
-        if myShot.shape == "circle" then
-            love.graphics.circle("fill", myShot.x, myShot.y, myShot.radius)
-        end
+        love.graphics.circle("fill", myShot.x, myShot.y, myShot.radius)
     end
 end
 

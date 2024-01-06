@@ -2,6 +2,7 @@ local settings = {}
 
 
 settings.shoot = {
+    minSpeed = 150,
     maxSpeed = 300,
     minSize = 10,
     maxSize = 30,
