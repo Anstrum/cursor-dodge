@@ -24,8 +24,8 @@
 
 ### Game Objectives | Phase 3: Bonuses
 
-- Add Red shoots
-- Create Bonuses (red shoots)
+- Add Green shoots
+- Create Bonuses (Green shoots)
 - Add Text to explain bonus
 - Add Random Bonus Creation
 
