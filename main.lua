@@ -1,6 +1,11 @@
 io.stdout:setvbuf("no")
 love.graphics.setDefaultFilter("nearest")
 
+ --[[
+    Current work: creating static bonuses that will help the player surviving
+ ]]
+
+
 
 require("misc/misc")
 require("misc/debug")
