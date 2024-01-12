@@ -32,7 +32,7 @@ end
 
 
 -- player functions
-function game.takeDamage()
+function game.takeDamage()  
     game.player.hp.takeDamage()
 end
 function game.addPlayerInvincibility()

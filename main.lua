@@ -6,7 +6,6 @@ love.graphics.setDefaultFilter("nearest")
  ]]
 
 
-
 require("misc/misc")
 require("misc/debug")
 require("game/gameManager")
@@ -24,8 +23,8 @@ function love.update(dt)
 end
 
 function love.keypressed(key)
-    debug.keypressed(key)
     game.keypressed(key)
+    debug.keypressed(key)
 end
 
 function love.quit()
@@ -33,9 +32,12 @@ function love.quit()
 end
 
 function love.draw()
+    -- reset color to white and full alpha --
     love.graphics.setColor(1, 1, 1, 1)
 
+    -- here's begin the drawing of the game --
     game.draw()
 
+    -- Debug must be drawn last --
     debug.draw()
 end
